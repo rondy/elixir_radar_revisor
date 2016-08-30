@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
+gem 'rack-cors'
 # gem 'jbuilder', '~> 2.5'
 
 group :development, :test do
