@@ -1,0 +1,78 @@
+<div id="revision_result">
+  <h3>Resultado da revisão</h3>
+
+  <%
+    blog_posts_revised_count = @blog_posts_revision_result.size
+    blog_posts_divergences_count = @blog_posts_revision_result.select { |result_entry| result_entry[:divergences].present? }.size
+  %>
+  <h4>Blog posts (<%= pluralize(blog_posts_revised_count, 'links') %> revisados, <%= pluralize(blog_posts_divergences_count, 'divergência', plural: 'divergências') %>)</h4>
+  <ul>
+    <% @blog_posts_revision_result.select { |result_entry| result_entry[:divergences].present? }.each do |result_entry| %>
+      <li>
+        <%= result_entry[:entry_title] %>
+        <ul>
+          <% result_entry[:divergences].each do |divergence| %>
+            <li>
+              <%= divergence[:reason] %>
+              <ul>
+                <% divergence[:details].each do |field, description| %>
+                  <li><%= field %>: <%= description %></li>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+    <% end %>
+  </ul>
+
+  <%
+    jobs_revised_count = @jobs_revision_result.size
+    jobs_divergences_count = @jobs_revision_result.select { |result_entry| result_entry[:divergences].present? }.size
+  %>
+  <h4>Jobs (<%= pluralize(jobs_revised_count, 'links') %> revisados, <%= pluralize(jobs_divergences_count, 'divergência', plural: 'divergências') %>)</h4>
+  <ul>
+    <% @jobs_revision_result.select { |result_entry| result_entry[:divergences].present? }.each do |result_entry| %>
+      <li>
+        <%= result_entry[:entry_title] %>
+        <ul>
+          <% result_entry[:divergences].each do |divergence| %>
+            <li>
+              <%= divergence[:reason] %>
+              <ul>
+                <% divergence[:details].each do |field, description| %>
+                  <li><%= field %>: <%= description %></li>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+    <% end %>
+  </ul>
+
+  <%
+    events_revised_count = @events_revision_result.size
+    events_divergences_count = @events_revision_result.select { |result_entry| result_entry[:divergences].present? }.size
+  %>
+  <h4>Events (<%= pluralize(events_revised_count, 'links') %> revisados, <%= pluralize(events_divergences_count, 'divergência', plural: 'divergências') %>)</h4>
+  <ul>
+    <% @events_revision_result.select { |result_entry| result_entry[:divergences].present? }.each do |result_entry| %>
+      <li>
+        <%= result_entry[:entry_title] %>
+        <ul>
+          <% result_entry[:divergences].each do |divergence| %>
+            <li>
+              <%= divergence[:reason] %>
+              <ul>
+                <% divergence[:details].each do |field, description| %>
+                  <li><%= field %>: <%= description %></li>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+    <% end %>
+  </ul>
+</div>
