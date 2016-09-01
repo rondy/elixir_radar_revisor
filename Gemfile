@@ -4,6 +4,8 @@ gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
 gem 'rack-cors'
 # gem 'jbuilder', '~> 2.5'
 
+gem 'mechanize'
+
 group :development, :test do
   gem 'byebug', platform: :mri
   gem 'rspec-rails'
