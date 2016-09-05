@@ -34,4 +34,21 @@ describe ReviseBlogPosts do
     expect(divergent_result_entry[:divergences].first[:reason]).to eq("page_title_does_not_match")
     expect(divergent_result_entry[:divergences].first[:details][:fetched_page_title]).to eq('Safeguard web service failures in Elixir with Fuse')
   end
+
+  context 'when page title is not fetched from the title tag' do
+    it 'fetches page title from the og:title property' do
+      entry = {
+        title: 'Phoenix Channels vs Rails Action Cable',
+        url: 'https://dockyard.com/blog/2016/08/09/phoenix-channels-vs-rails-action-cable',
+        subtitle: 'dockyard.com',
+        tag: 'blog-post'
+      }
+
+      revision_result = ReviseBlogPosts.new.call([entry])
+
+      consistent_result_entry = revision_result.first
+      expect(consistent_result_entry[:entry_title]).to eq('Phoenix Channels vs Rails Action Cable')
+      expect(consistent_result_entry[:divergences]).to be_empty
+    end
+  end
 end
