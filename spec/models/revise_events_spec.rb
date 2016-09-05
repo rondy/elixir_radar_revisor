@@ -32,4 +32,39 @@ describe ReviseEvents do
     expect(divergent_result_entry[:divergences].first[:reason]).to eq('page_title_does_not_match')
     expect(divergent_result_entry[:divergences].first[:details][:fetched_page_title]).to eq('Empire City Elixir Conf')
   end
+
+  context 'when events are from Meetup.com' do
+    it 'revises a consistent event entry' do
+      entry = {
+        title: 'Sarasota, FL',
+        url: 'https://www.meetup.com/SarasotaSoftwareEngineers/events/232976666/',
+        subtitle: 'Concurrent Programming with the Elixir ecosystem',
+        tag: 'event'
+      }
+
+      revision_result = ReviseEvents.new.call([entry])
+
+      consistent_result_entry = revision_result.first
+      expect(consistent_result_entry[:entry_title]).to eq('Sarasota, FL')
+      expect(consistent_result_entry[:divergences]).to be_empty
+    end
+
+    it 'revises a divergent event entry' do
+      entry = {
+        title: 'Indianapolis­, IN',
+        url: 'http://www.meetup.com/indyelixir/events/233392329/',
+        subtitle: 'Releasing Hex packages and neural networks',
+        tag: 'event'
+      }
+
+      revision_result = ReviseEvents.new.call([entry])
+
+      divergent_result_entry = revision_result.first
+      expect(divergent_result_entry[:entry_title]).to eq('Indianapolis­, IN')
+      expect(divergent_result_entry[:divergences]).to be_present
+      expect(divergent_result_entry[:divergences].first[:reason]).to eq('event_title_does_not_match')
+      expect(divergent_result_entry[:divergences].first[:details][:given_event_title]).to eq('Releasing Hex packages and neural networks')
+      expect(divergent_result_entry[:divergences].first[:details][:fetched_event_title]).to eq('Indy Elixir Monthly Meetup')
+    end
+  end
 end
