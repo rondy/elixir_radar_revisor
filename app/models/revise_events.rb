@@ -33,14 +33,29 @@ class ReviseEvents
           divergences: []
         }
 
-        fetched_page_title = Mechanize.new.get(entry[:url]).title
-        page_title_matches = !!(fetched_page_title =~ Regexp.new(given_entry_title))
+        status, response = begin
+          [:ok, Mechanize.new.get(entry[:url]).title]
+        rescue Exception => e
+          [:error, [e.class, e.message].join(': ')]
+        end
 
-        unless page_title_matches
+        if status == :ok
+          fetched_page_title = response
+          page_title_matches = !!(fetched_page_title =~ Regexp.new(given_entry_title))
+
+          unless page_title_matches
+            result_entry[:divergences] << {
+              reason: 'page_title_does_not_match',
+              details: {
+                fetched_page_title: fetched_page_title
+              }
+            }
+          end
+        elsif status == :error
           result_entry[:divergences] << {
-            reason: 'page_title_does_not_match',
+            reason: 'connection_error',
             details: {
-              fetched_page_title: fetched_page_title
+              error_message: response
             }
           }
         end
