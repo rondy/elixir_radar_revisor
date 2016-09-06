@@ -51,4 +51,22 @@ describe ReviseBlogPosts do
       expect(consistent_result_entry[:divergences]).to be_empty
     end
   end
+
+  context 'when page title have difference regarding text case' do
+    it 'matches title regardless of the case' do
+      entry = {
+        # The fetched title will have 'phoenix' term, in lowercase.
+        title: 'Passwordless login with Phoenix',
+        url: 'http://inaka.net/blog/2016/07/27/passwordless-login-with-phoenix/',
+        subtitle: 'inaka.net',
+        tag: 'blog-post'
+      }
+
+      revision_result = ReviseBlogPosts.new.call([entry])
+
+      consistent_result_entry = revision_result.first
+      expect(consistent_result_entry[:entry_title]).to eq('Passwordless login with Phoenix')
+      expect(consistent_result_entry[:divergences]).to be_empty
+    end
+  end
 end

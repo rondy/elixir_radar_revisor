@@ -9,7 +9,7 @@ class ReviseBlogPosts
       }
 
       fetched_page_title = fetch_page_title(entry)
-      page_title_matches = !!(fetched_page_title =~ Regexp.new(given_entry_title))
+      page_title_matches = !!(fetched_page_title =~ Regexp.new(given_entry_title, Regexp::IGNORECASE))
 
       unless page_title_matches
         result_entry[:divergences] << {
