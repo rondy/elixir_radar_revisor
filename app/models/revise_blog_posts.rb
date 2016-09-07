@@ -14,25 +14,11 @@ class ReviseBlogPosts
         end,
 
         on_success: lambda do |fetched_page_title|
-          page_title_matches = check_titles_match(given_entry_title, fetched_page_title)
-
-          unless page_title_matches
-            result_entry[:divergences] << {
-              reason: 'page_title_does_not_match',
-              details: {
-                fetched_page_title: fetched_page_title
-              }
-            }
-          end
+          revise_from_successful_response(entry, result_entry, fetched_page_title)
         end,
 
-        on_error: lambda do |response|
-          result_entry[:divergences] << {
-            reason: 'connection_error',
-            details: {
-              error_message: response
-            }
-          }
+        on_error: lambda do |error_message|
+          revise_from_failed_response(entry, result_entry, error_message)
         end
       )
 
@@ -48,6 +34,34 @@ class ReviseBlogPosts
       on_success: on_success,
       on_error: on_error
     )
+  end
+
+  def revise_from_successful_response(entry, result_entry, fetched_page_title)
+    given_entry_title = entry[:title]
+
+    page_title_matches = check_titles_match(given_entry_title, fetched_page_title)
+
+    unless page_title_matches
+      result_entry[:divergences] << {
+        reason: 'page_title_does_not_match',
+        details: {
+          fetched_page_title: fetched_page_title
+        }
+      }
+    end
+
+    result_entry
+  end
+
+  def revise_from_failed_response(_, result_entry, error_message)
+    result_entry[:divergences] << {
+      reason: 'connection_error',
+      details: {
+        error_message: error_message
+      }
+    }
+
+    result_entry
   end
 
   def fetch_page_title(entry)
