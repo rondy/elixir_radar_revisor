@@ -22,7 +22,7 @@ class ReviseEvents
     given_event_title = entry[:subtitle]
     fetched_event_title = Mechanize.new.get(entry[:url]).search('#event-title h1').text.strip
 
-    event_title_matches = !!(fetched_event_title =~ Regexp.new(Regexp.escape(given_event_title)))
+    event_title_matches = check_titles_match(given_event_title, fetched_event_title)
 
     unless event_title_matches
       result_entry[:divergences] << {
@@ -53,7 +53,7 @@ class ReviseEvents
 
     if status == :ok
       fetched_page_title = response
-      page_title_matches = !!(fetched_page_title =~ Regexp.new(given_entry_title))
+      page_title_matches = check_titles_match(given_entry_title, fetched_page_title)
 
       unless page_title_matches
         result_entry[:divergences] << {
@@ -73,5 +73,9 @@ class ReviseEvents
     end
 
     result_entry
+  end
+
+  def check_titles_match(given_title, fetched_title)
+    CheckTitlesMatch.new.call(given_title, fetched_title)
   end
 end

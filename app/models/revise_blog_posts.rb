@@ -9,7 +9,7 @@ class ReviseBlogPosts
       }
 
       fetched_page_title = fetch_page_title(entry)
-      page_title_matches = !!(fetched_page_title =~ Regexp.new(given_entry_title, Regexp::IGNORECASE))
+      page_title_matches = check_titles_match(given_entry_title, fetched_page_title)
 
       unless page_title_matches
         result_entry[:divergences] << {
@@ -36,5 +36,9 @@ class ReviseBlogPosts
       .search('meta[property="og:title"]')
       .first
       .try(:[], 'content')
+  end
+
+  def check_titles_match(given_title, fetched_title)
+    CheckTitlesMatch.new.call(given_title, fetched_title)
   end
 end
