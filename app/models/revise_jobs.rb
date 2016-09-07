@@ -8,14 +8,31 @@ class ReviseJobs
         divergences: []
       }
 
-      job_entry_details = entry[:subtitle].split('-').first.strip
-      job_details_matches = !!(Mechanize.new.get(entry[:url]).body =~ Regexp.new(Regexp.escape(job_entry_details)))
+      status, response = begin
+        [:ok, Mechanize.new.get(entry[:url]).body]
+      rescue Exception => e
+        [:error, [e.class, e.message].join(': ')]
+      end
 
-      unless job_details_matches
+      if status == :ok
+        job_page_content = response
+        job_entry_details = entry[:subtitle].split('-').first.strip
+
+        job_details_matches = !!(job_page_content =~ Regexp.new(Regexp.escape(job_entry_details)))
+
+        unless job_details_matches
+          result_entry[:divergences] << {
+            reason: 'job_details_does_not_match',
+            details: {
+              given_job_details: job_entry_details
+            }
+          }
+        end
+      elsif status == :error
         result_entry[:divergences] << {
-          reason: 'job_details_does_not_match',
+          reason: 'connection_error',
           details: {
-            given_job_details: job_entry_details
+            error_message: response
           }
         }
       end
@@ -24,3 +41,4 @@ class ReviseJobs
     end
   end
 end
+

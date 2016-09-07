@@ -19,17 +19,32 @@ class ReviseEvents
       divergences: []
     }
 
-    given_event_title = entry[:subtitle]
-    fetched_event_title = Mechanize.new.get(entry[:url]).search('#event-title h1').text.strip
+    status, response = begin
+      [:ok, Mechanize.new.get(entry[:url]).search('#event-title h1').text.strip]
+    rescue Exception => e
+      [:error, [e.class, e.message].join(': ')]
+    end
 
-    event_title_matches = check_titles_match(given_event_title, fetched_event_title)
+    if status == :ok
+      given_event_title = entry[:subtitle]
+      fetched_event_title = response
 
-    unless event_title_matches
+      event_title_matches = check_titles_match(given_event_title, fetched_event_title)
+
+      unless event_title_matches
+        result_entry[:divergences] << {
+          reason: 'event_title_does_not_match',
+          details: {
+            given_event_title: given_event_title,
+            fetched_event_title: fetched_event_title
+          }
+        }
+      end
+    elsif status == :error
       result_entry[:divergences] << {
-        reason: 'event_title_does_not_match',
+        reason: 'connection_error',
         details: {
-          given_event_title: given_event_title,
-          fetched_event_title: fetched_event_title
+          error_message: response
         }
       }
     end

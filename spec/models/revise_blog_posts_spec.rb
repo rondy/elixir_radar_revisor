@@ -69,4 +69,23 @@ describe ReviseBlogPosts do
       expect(consistent_result_entry[:divergences]).to be_empty
     end
   end
+
+  context 'when accessing the entry url raises an error' do
+    it 'revises as a divergent event entry' do
+      entry = {
+        title: "Understanding Elixir's recompilation",
+        url: 'http://milhouseonsoftware.com/2016/08/11/understanding-elixir-recompilation-error-404/',
+        subtitle: 'milhouseonsoftware.com',
+        tag: 'blog-post'
+      }
+
+      revision_result = ReviseBlogPosts.new.call([entry])
+
+      divergent_result_entry = revision_result.last
+      expect(divergent_result_entry[:entry_title]).to eq("Understanding Elixir's recompilation")
+      expect(divergent_result_entry[:divergences]).to be_present
+      expect(divergent_result_entry[:divergences].first[:reason]).to eq('connection_error')
+      expect(divergent_result_entry[:divergences].first[:details][:error_message]).to eq('Mechanize::ResponseCodeError: 404 => Net::HTTPNotFound for http://milhouseonsoftware.com/2016/08/11/understanding-elixir-recompilation-error-404/ -- unhandled response')
+    end
+  end
 end

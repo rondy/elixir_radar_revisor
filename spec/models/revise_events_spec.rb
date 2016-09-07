@@ -85,5 +85,22 @@ describe ReviseEvents do
       expect(divergent_result_entry[:divergences].first[:reason]).to eq('connection_error')
       expect(divergent_result_entry[:divergences].first[:details][:error_message]).to eq('OpenSSL::SSL::SSLError: SSL_connect returned=1 errno=0 state=error: certificate verify failed')
     end
+
+    it 'revises as a divergent entry from meetup.com' do
+      entry = {
+        title: 'Indianapolis­, IN',
+        url: 'http://www.meetup.com/indyelixirr/events/233392329/',
+        subtitle: 'Releasing Hex packages and neural networks',
+        tag: 'event'
+      }
+
+      revision_result = ReviseEvents.new.call([entry])
+
+      divergent_result_entry = revision_result.first
+      expect(divergent_result_entry[:entry_title]).to eq('Indianapolis­, IN')
+      expect(divergent_result_entry[:divergences]).to be_present
+      expect(divergent_result_entry[:divergences].first[:reason]).to eq('connection_error')
+      expect(divergent_result_entry[:divergences].first[:details][:error_message]).to eq('Mechanize::ResponseCodeError: 404 => Net::HTTPNotFound for http://www.meetup.com/indyelixirr/events/233392329/ -- unhandled response')
+    end
   end
 end
