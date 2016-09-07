@@ -8,37 +8,51 @@ class ReviseJobs
         divergences: []
       }
 
-      status, response = begin
-        [:ok, Mechanize.new.get(entry[:url]).body]
-      rescue Exception => e
-        [:error, [e.class, e.message].join(': ')]
-      end
+      fetching_content_from_web_page(
+        action: lambda do
+          fetch_job_page_content(entry)
+        end,
 
-      if status == :ok
-        job_page_content = response
-        job_entry_details = entry[:subtitle].split('-').first.strip
+        on_success: lambda do |job_page_content|
+          job_entry_details = entry[:subtitle].split('-').first.strip
 
-        job_details_matches = !!(job_page_content =~ Regexp.new(Regexp.escape(job_entry_details)))
+          job_details_matches = !!(job_page_content =~ Regexp.new(Regexp.escape(job_entry_details)))
 
-        unless job_details_matches
+          unless job_details_matches
+            result_entry[:divergences] << {
+              reason: 'job_details_does_not_match',
+              details: {
+                given_job_details: job_entry_details
+              }
+            }
+          end
+        end,
+
+        on_error: lambda do |error_message|
           result_entry[:divergences] << {
-            reason: 'job_details_does_not_match',
+            reason: 'connection_error',
             details: {
-              given_job_details: job_entry_details
+              error_message: error_message
             }
           }
         end
-      elsif status == :error
-        result_entry[:divergences] << {
-          reason: 'connection_error',
-          details: {
-            error_message: response
-          }
-        }
-      end
+      )
 
       result_entry
     end
   end
-end
 
+  private
+
+  def fetch_job_page_content(entry)
+    Mechanize.new.get(entry[:url]).body
+  end
+
+  def fetching_content_from_web_page(action:, on_success:, on_error:)
+    FetchContentFromWebPage.new.call(
+      action: action,
+      on_success: on_success,
+      on_error: on_error
+    )
+  end
+end
