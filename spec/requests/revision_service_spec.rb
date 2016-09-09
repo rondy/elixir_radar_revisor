@@ -20,7 +20,7 @@ describe 'Revision service', type: :request do
       "entriesList" => [consistent_entry, divergent_entry]
     }
 
-    response_body = Capybara.string(response.body)
+    response_body = parse_response_body(response.body)
 
     expect_to_render_revision_summary(response_body, 'Blog posts (2 links revisados, 1 divergência')
 
@@ -56,7 +56,7 @@ describe 'Revision service', type: :request do
       "entriesList" => [consistent_entry, divergent_entry]
     }
 
-    response_body = Capybara.string(response.body)
+    response_body = parse_response_body(response.body)
 
     expect_to_render_revision_summary(response_body, 'Jobs (2 links revisados, 1 divergência)')
 
@@ -89,7 +89,7 @@ describe 'Revision service', type: :request do
       "entriesList" => [consistent_entry, divergent_entry]
     }
 
-    response_body = Capybara.string(response.body)
+    response_body = parse_response_body(response.body)
 
     expect_to_render_revision_summary(response_body, 'Events (2 links revisados, 1 divergência)')
 
@@ -103,6 +103,9 @@ describe 'Revision service', type: :request do
     expect_not_to_render_consistent_entry(response_body, entry_title: 'ElixirConf')
   end
 
+  def parse_response_body(response_body)
+    Capybara.string(response_body)
+  end
 
   def expect_to_render_revision_summary(response_body, summary_content)
     expect(response_body).to have_content(summary_content)
