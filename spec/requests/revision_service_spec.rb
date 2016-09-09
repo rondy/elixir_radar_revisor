@@ -27,8 +27,8 @@ describe 'Revision service', type: :request do
     expect_to_render_divergent_entry(
       response_body,
       entry_title: 'Using Postgres range data type in Ecto',
-      divergence_reason: 'page_title_does_not_match',
-      divergence_details: 'fetched_page_title: Safeguard web service failures in Elixir with Fuse',
+      divergence_reason: 'Título da página não confere',
+      divergence_details: 'Título da página obtido: Safeguard web service failures in Elixir with Fuse',
     )
 
     expect_not_to_render_consistent_entry(

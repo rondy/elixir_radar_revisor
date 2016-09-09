@@ -13,10 +13,10 @@
         <ul>
           <% result_entry[:divergences].each do |divergence| %>
             <li>
-              <%= divergence[:reason] %>
+              <%= present_divergence_reason(divergence[:reason]) %>
               <ul>
                 <% divergence[:details].each do |field, description| %>
-                  <li><%= field %>: <%= description %></li>
+                  <li><%= present_divergence_detail(field) %>: <%= description %></li>
                 <% end %>
               </ul>
             </li>
