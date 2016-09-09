@@ -1,24 +1,16 @@
-# README
+# Elixir Radar Revisor
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Serviço de revisão da newsletter Elixir Radar.
 
-Things you may want to cover:
+A revisão permite apontar possiveis inconsistências durante a confecção de uma edição (ex: o link para um blog post está quebrado ou o título do link não confere com o título real do post).
 
-* Ruby version
+#### Como testar:
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+  * Entre em https://elixir-radar-revisor.herokuapp.com/.
+  * Arraste o link disponível na página pra barra de favoritos do navegador. Isso vai criar um bookmarklet que dispara a revisão.
+  * Acesse uma das páginas web de uma edição da Elixir Radar.
+    * Ex: https://app.rdstation.com.br/mail/500ffee3-d2a3-4b5d-a7b9-370fe35bda73
+  * Clique no bookmarket que dispara a revisão.
+    * Para o teste, dê preferência ao navegador Google Chrome.
+    * É possível que o Chrome bloquei o carregamento do script do bookmarklet. Clique na opção "load unsafe script" para liberar o acesso.
+  * Aguarde o resultado aparecer na tela.
