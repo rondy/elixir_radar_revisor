@@ -1,6 +1,9 @@
 class ReviseJobs
   def call(entries)
-    entries.select { |n| n[:tag]=='job' }.map do |entry|
+    Parallel.map(
+      entries.select { |n| n[:tag]=='job' },
+      in_processes: 4
+    ) do |entry|
       given_entry_title = entry[:title]
 
       result_entry = {
@@ -45,6 +48,7 @@ class ReviseJobs
   private
 
   def fetch_job_page_content(entry)
+    puts "fetching #{entry[:url]}..."
     Mechanize.new.get(entry[:url]).body
   end
 

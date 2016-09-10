@@ -1,6 +1,9 @@
 class ReviseBlogPosts
   def call(entries)
-    entries.select { |entry| entry[:tag] == 'blog-post' }.map do |entry|
+    Parallel.map(
+      entries.select { |entry| entry[:tag] == 'blog-post' },
+      in_processes: 4
+    ) do |entry|
       given_entry_title = entry[:title]
 
       result_entry = {
@@ -65,6 +68,7 @@ class ReviseBlogPosts
   end
 
   def fetch_page_title(entry)
+    puts "fetching #{entry[:url]}..."
     page = Mechanize.new.get(entry[:url])
     page.title || extract_title_from_og_title(page)
   end
