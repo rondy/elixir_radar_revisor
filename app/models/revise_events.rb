@@ -1,15 +1,22 @@
 class ReviseEvents
   def call(entries)
-    entries.select { |n| n[:tag]=='event' }.map do |entry|
-      if entry[:url] =~ /meetup\.com/
-        revise_event_from_meetup_com(entry)
-      else
-        revise_event_from_generic_source(entry)
-      end
+    Parallel.map(
+      entries.select { |entry| entry[:tag] == 'event' },
+      in_processes: 8
+    ) do |entry|
+      revise_entry(entry)
     end
   end
 
   private
+
+  def revise_entry(entry)
+    if entry[:url] =~ /meetup\.com/
+      revise_event_from_meetup_com(entry)
+    else
+      revise_event_from_generic_source(entry)
+    end
+  end
 
   def revise_event_from_meetup_com(entry)
     given_entry_title = entry[:title]

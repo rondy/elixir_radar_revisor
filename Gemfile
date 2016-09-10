@@ -5,6 +5,7 @@ gem 'rack-cors'
 # gem 'jbuilder', '~> 2.5'
 
 gem 'mechanize'
+gem 'parallel'
 
 group :development, :test do
   gem 'byebug', platform: :mri

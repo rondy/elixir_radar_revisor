@@ -1,6 +1,9 @@
 class ReviseBlogPosts
   def call(entries)
-    entries.select { |entry| entry[:tag] == 'blog-post' }.map do |entry|
+    Parallel.map(
+      entries.select { |entry| entry[:tag] == 'blog-post' },
+      in_processes: 4
+    ) do |entry|
       given_entry_title = entry[:title]
 
       result_entry = {
