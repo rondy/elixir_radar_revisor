@@ -1,20 +1,76 @@
+<style type="text/css">
+  #revision_result * {
+    margin: 0;
+    padding: 0;
+  }
+
+  #revision_result {
+    color: #333;
+    font-family: helvetica;
+    line-height: 20px;
+    background-color: #EEE;
+    width: 500px;
+    margin: 40px;
+    padding: 20px;
+    border: 1px solid #BBB;
+  }
+
+  #revision_result h3 {
+    font-size: 22px;
+    color: black;
+  }
+
+  #revision_result h4 {
+    font-size: 18px;
+    color: black;
+  }
+
+  #revision_result .revision-result-section {
+    margin-top: 35px;
+    font-size: 14px;
+  }
+
+  #revision_result .revision-result-section ul {
+    margin-left: 10px;
+  }
+
+  #revision_result .revision-result-section ~ ul > li {
+    font-weight: bold;
+  }
+
+  #revision_result .revision-details {
+    margin-left: 20px;
+  }
+
+  #revision_result .revision-divergences {
+    margin-left: 30px;
+  }
+
+  #revision_result .result-entry-title {
+    font-weight: bold;
+    display: block;
+    padding-top: 8px;
+  }
+</style>
+
 <div id="revision_result">
   <h3>Resultado da revisão</h3>
 
+  <div class="revision-result-section">
   <%
     blog_posts_revised_count = @blog_posts_revision_result.size
     blog_posts_divergences_count = @blog_posts_revision_result.select { |result_entry| result_entry[:divergences].present? }.size
   %>
   <h4>Blog posts (<%= pluralize(blog_posts_revised_count, 'links') %> revisados, <%= pluralize(blog_posts_divergences_count, 'divergência', plural: 'divergências') %>)</h4>
-  <ul>
+  <ul class="revision-result-items">
     <% @blog_posts_revision_result.select { |result_entry| result_entry[:divergences].present? }.each do |result_entry| %>
       <li>
-        <%= result_entry[:entry_title] %>
-        <ul>
+        <span class="result-entry-title"><%= result_entry[:entry_title] %></span>
+        <ul class="revision-details">
           <% result_entry[:divergences].each do |divergence| %>
             <li>
               <%= present_divergence_reason(divergence[:reason]) %>
-              <ul>
+              <ul class="revision-divergences">
                 <% divergence[:details].each do |field, description| %>
                   <li><%= present_divergence_detail(field) %>: <%= description %></li>
                 <% end %>
@@ -25,21 +81,23 @@
       </li>
     <% end %>
   </ul>
+  </div>
 
+  <div class="revision-result-section">
   <%
     jobs_revised_count = @jobs_revision_result.size
     jobs_divergences_count = @jobs_revision_result.select { |result_entry| result_entry[:divergences].present? }.size
   %>
   <h4>Jobs (<%= pluralize(jobs_revised_count, 'links') %> revisados, <%= pluralize(jobs_divergences_count, 'divergência', plural: 'divergências') %>)</h4>
-  <ul>
+  <ul class="revision-result-items">
     <% @jobs_revision_result.select { |result_entry| result_entry[:divergences].present? }.each do |result_entry| %>
       <li>
-        <%= result_entry[:entry_title] %>
-        <ul>
+        <span class="result-entry-title"><%= result_entry[:entry_title] %></span>
+        <ul class="revision-details">
           <% result_entry[:divergences].each do |divergence| %>
             <li>
               <%= divergence[:reason] %>
-              <ul>
+              <ul class="revision-divergences">
                 <% divergence[:details].each do |field, description| %>
                   <li><%= field %>: <%= description %></li>
                 <% end %>
@@ -50,21 +108,23 @@
       </li>
     <% end %>
   </ul>
+  </div>
 
+  <div class="revision-result-section">
   <%
     events_revised_count = @events_revision_result.size
     events_divergences_count = @events_revision_result.select { |result_entry| result_entry[:divergences].present? }.size
   %>
   <h4>Events (<%= pluralize(events_revised_count, 'links') %> revisados, <%= pluralize(events_divergences_count, 'divergência', plural: 'divergências') %>)</h4>
-  <ul>
+  <ul class="revision-result-items">
     <% @events_revision_result.select { |result_entry| result_entry[:divergences].present? }.each do |result_entry| %>
       <li>
-        <%= result_entry[:entry_title] %>
-        <ul>
+        <span class="result-entry-title"><%= result_entry[:entry_title] %></span>
+        <ul class="revision-details">
           <% result_entry[:divergences].each do |divergence| %>
             <li>
               <%= divergence[:reason] %>
-              <ul>
+              <ul class="revision-divergences">
                 <% divergence[:details].each do |field, description| %>
                   <li><%= field %>: <%= description %></li>
                 <% end %>
@@ -75,4 +135,5 @@
       </li>
     <% end %>
   </ul>
+  </div>
 </div>
