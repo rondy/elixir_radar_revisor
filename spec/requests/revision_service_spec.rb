@@ -28,7 +28,7 @@ describe 'Revision service', type: :request do
       response_body,
       entry_title: 'Using Postgres range data type in Ecto',
       divergence_reason: 'Título da página não confere',
-      divergence_details: 'Título da página obtido: Safeguard web service failures in Elixir with Fuse',
+      divergence_details: 'Título da página na página externa: Safeguard web service failures in Elixir with Fuse',
     )
 
     expect_not_to_render_consistent_entry(
@@ -63,8 +63,8 @@ describe 'Revision service', type: :request do
     expect_to_render_divergent_entry(
       response_body,
       entry_title: 'Desenvolvedor Elixir/Phoenix ou back-end sênior disposto a aprender',
-      divergence_reason: 'job_details_does_not_match',
-      divergence_details: 'given_job_details: The RealReal'
+      divergence_reason: 'Detalhes do job não confere',
+      divergence_details: 'Detalhes do job na newsletter: The RealReal'
     )
 
     expect_not_to_render_consistent_entry(response_body, entry_title: 'Elixir Developer')
@@ -96,8 +96,8 @@ describe 'Revision service', type: :request do
     expect_to_render_divergent_entry(
       response_body,
       entry_title: 'EmpEx -- Halloween Lightning Talks 2016',
-      divergence_reason: 'page_title_does_not_match',
-      divergence_details: 'fetched_page_title: Empire City Elixir Conf'
+      divergence_reason: 'Título da página não confere',
+      divergence_details: 'Título da página na página externa: Empire City Elixir Conf'
     )
 
     expect_not_to_render_consistent_entry(response_body, entry_title: 'ElixirConf')

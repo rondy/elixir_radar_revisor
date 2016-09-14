@@ -96,10 +96,10 @@
         <ul class="revision-details">
           <% result_entry[:divergences].each do |divergence| %>
             <li>
-              <%= divergence[:reason] %>
+              <%= present_divergence_reason(divergence[:reason]) %>
               <ul class="revision-divergences">
                 <% divergence[:details].each do |field, description| %>
-                  <li><%= field %>: <%= description %></li>
+                  <li><%= present_divergence_detail(field) %>: <%= description %></li>
                 <% end %>
               </ul>
             </li>
@@ -123,10 +123,10 @@
         <ul class="revision-details">
           <% result_entry[:divergences].each do |divergence| %>
             <li>
-              <%= divergence[:reason] %>
+              <%= present_divergence_reason(divergence[:reason]) %>
               <ul class="revision-divergences">
                 <% divergence[:details].each do |field, description| %>
-                  <li><%= field %>: <%= description %></li>
+                  <li><%= present_divergence_detail(field) %>: <%= description %></li>
                 <% end %>
               </ul>
             </li>
