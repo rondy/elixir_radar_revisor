@@ -68,7 +68,11 @@ class ReviseBlogPosts
   end
 
   def fetch_page_title(entry)
-    page = Mechanize.new.get(entry[:url])
+    agent = Mechanize.new
+    agent.read_timeout = 2
+
+    page = agent.get(entry[:url])
+
     page.title || extract_title_from_og_title(page)
   end
 

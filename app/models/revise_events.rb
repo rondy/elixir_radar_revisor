@@ -108,11 +108,17 @@ class ReviseEvents
   end
 
   def fetch_page_title(entry)
-    Mechanize.new.get(entry[:url]).title
+    agent = Mechanize.new
+    agent.read_timeout = 2
+
+    agent.get(entry[:url]).title
   end
 
   def fetch_meetup_com_event_title(entry)
-    Mechanize.new.get(entry[:url]).search('#event-title h1').text.strip
+    agent = Mechanize.new
+    agent.read_timeout = 2
+
+    agent.get(entry[:url]).search('#event-title h1').text.strip
   end
 
   def check_titles_match(given_title, fetched_title)

@@ -48,7 +48,10 @@ class ReviseJobs
   private
 
   def fetch_job_page_content(entry)
-    Mechanize.new.get(entry[:url]).body
+    agent = Mechanize.new
+    agent.read_timeout = 2
+
+    agent.get(entry[:url]).body
   end
 
   def fetching_content_from_web_page(action:, on_success:, on_error:)
