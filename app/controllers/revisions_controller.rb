@@ -8,7 +8,7 @@ class RevisionsController < ApplicationController
   }
 
   def create
-    entries = params.permit(entriesList: [:title, :url, :subtitle, :tag]).fetch(:entriesList)
+    entries = params.permit(entriesList: [:title, :url, :subtitle, :description, :tag]).fetch(:entriesList)
 
     @blog_posts_revision_result,
     @jobs_revision_result,

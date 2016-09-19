@@ -6,6 +6,7 @@ describe ApplicationHelper do
       expect(present_divergence_reason('page_title_does_not_match')).to eq('Título da página não confere')
       expect(present_divergence_reason('job_details_does_not_match')).to eq('Detalhes do job não confere')
       expect(present_divergence_reason('event_title_does_not_match')).to eq('Título do evento não confere')
+      expect(present_divergence_reason('event_date_does_not_match')).to eq('Data do evento não confere')
     end
   end
 
@@ -15,6 +16,10 @@ describe ApplicationHelper do
       expect(present_divergence_detail(:given_job_details)).to eq('Detalhes do job na newsletter')
       expect(present_divergence_detail(:given_event_title)).to eq('Título do evento na newsletter')
       expect(present_divergence_detail(:fetched_event_title)).to eq('Título do evento na página externa')
+      expect(present_divergence_detail(:given_event_title)).to eq('Título do evento na newsletter')
+      expect(present_divergence_detail(:fetched_event_title)).to eq('Título do evento na página externa')
+      expect(present_divergence_detail(:given_event_date)).to eq('Data do evento na newsletter')
+      expect(present_divergence_detail(:fetched_event_date)).to eq('Data do evento na página externa')
     end
   end
 end

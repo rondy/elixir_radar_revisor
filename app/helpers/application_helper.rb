@@ -4,6 +4,7 @@ module ApplicationHelper
       'page_title_does_not_match' => 'Título da página não confere',
       'job_details_does_not_match' => 'Detalhes do job não confere',
       'event_title_does_not_match' => 'Título do evento não confere',
+      'event_date_does_not_match' => 'Data do evento não confere',
     }[reason] || ''
   end
 
@@ -13,6 +14,8 @@ module ApplicationHelper
       given_job_details: 'Detalhes do job na newsletter',
       given_event_title: 'Título do evento na newsletter',
       fetched_event_title: 'Título do evento na página externa',
+      given_event_date: 'Data do evento na newsletter',
+      fetched_event_date: 'Data do evento na página externa',
     }[field] || ''
   end
 end

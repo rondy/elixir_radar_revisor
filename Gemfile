@@ -6,6 +6,7 @@ gem 'rack-cors'
 
 gem 'mechanize'
 gem 'parallel'
+gem 'chronic'
 
 group :development, :test do
   gem 'byebug', platform: :mri

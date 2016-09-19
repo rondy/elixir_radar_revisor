@@ -57,6 +57,37 @@ class ReviseEvents
       end
     )
 
+    fetching_content_from_web_page(
+      action: lambda do
+        fetch_meetup_com_event_date(entry)
+      end,
+
+      on_success: lambda do |fetched_event_date|
+        given_event_date = entry[:description]
+
+        event_date_matches = check_dates_match(given_event_date, fetched_event_date)
+
+        unless event_date_matches
+          result_entry[:divergences] << {
+            reason: 'event_date_does_not_match',
+            details: {
+              given_event_date: given_event_date,
+              fetched_event_date: fetched_event_date
+            }
+          }
+        end
+      end,
+
+      on_error: lambda do |error_message|
+        result_entry[:divergences] << {
+          reason: 'connection_error',
+          details: {
+            error_message: error_message
+          }
+        }
+      end
+    )
+
     result_entry
   end
 
@@ -121,7 +152,41 @@ class ReviseEvents
     agent.get(entry[:url]).search('#event-title h1').text.strip
   end
 
+  def fetch_meetup_com_event_date(entry)
+    agent = Mechanize.new
+    agent.read_timeout = 2
+
+    page = agent.get(entry[:url])
+
+    event_date_text =
+      page.search('.past-event-info li:first').text.presence ||
+      page.search('time[itemprop="startDate"]').text
+
+    event_date_text.to_s.strip
+  end
+
   def check_titles_match(given_title, fetched_title)
     CheckTitlesMatch.new.call(given_title, fetched_title)
+  end
+
+  def check_dates_match(given_event_date, fetched_event_date)
+    parse_event_date(given_event_date) == parse_event_date(fetched_event_date)
+  end
+
+  def parse_event_date(event_date)
+    normalized_event_date = normalize_event_date(event_date)
+
+    parse_event_time(normalized_event_date)
+      .try(:to_date)
+  end
+
+  def normalize_event_date(event_date)
+    event_date.to_s.split('·').first.to_s.strip
+  end
+
+  def parse_event_time(event_date)
+    Time.parse(event_date)
+  rescue TypeError, ArgumentError => e
+    Chronic.parse(event_date)
   end
 end
