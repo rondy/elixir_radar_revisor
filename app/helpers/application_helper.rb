@@ -5,6 +5,7 @@ module ApplicationHelper
       'job_details_does_not_match' => 'Detalhes do job não confere',
       'event_title_does_not_match' => 'Título do evento não confere',
       'event_date_does_not_match' => 'Data do evento não confere',
+      'connection_error' => 'Erro de conexão ao acessar a página externa',
     }[reason] || ''
   end
 
@@ -16,6 +17,7 @@ module ApplicationHelper
       fetched_event_title: 'Título do evento na página externa',
       given_event_date: 'Data do evento na newsletter',
       fetched_event_date: 'Data do evento na página externa',
+      error_message: 'Mensagem de erro',
     }[field] || ''
   end
 end
