@@ -88,4 +88,70 @@ describe ReviseBlogPosts do
       expect(divergent_result_entry[:divergences].first[:details][:error_message]).to eq('Mechanize::ResponseCodeError: 404 => Net::HTTPNotFound for http://milhouseonsoftware.com/2016/08/11/understanding-elixir-recompilation-error-404/ -- unhandled response')
     end
   end
+
+  it 'revises an blog post entry with consistent domain' do
+    entry = {
+      title: 'Elixir/Phoenix Centralized HTTP Logging',
+      url: 'https://dev.bleacherreport.com/elixir-phoenix-centralized-http-logging-aa50efe3105b',
+      subtitle: 'dev.bleacherreport.com',
+      tag: 'blog-post'
+    }
+
+    revision_result = ReviseBlogPosts.new.call([entry])
+
+    divergent_result_entry = revision_result.last
+    expect(divergent_result_entry[:entry_title]).to eq('Elixir/Phoenix Centralized HTTP Logging')
+    expect(divergent_result_entry[:divergences]).to be_empty
+  end
+
+  it 'revises an blog post entry with divergent domain' do
+    entry = {
+      title: 'Elixir/Phoenix Centralized HTTP Logging',
+      url: 'https://dev.bleacherreport.com/elixir-phoenix-centralized-http-logging-aa50efe3105b',
+      subtitle: 'dev.bleacherreporty.com',
+      tag: 'blog-post'
+    }
+
+    revision_result = ReviseBlogPosts.new.call([entry])
+
+    divergent_result_entry = revision_result.last
+    expect(divergent_result_entry[:entry_title]).to eq('Elixir/Phoenix Centralized HTTP Logging')
+    expect(divergent_result_entry[:divergences]).to be_present
+    expect(divergent_result_entry[:divergences].first[:reason]).to eq('domain_does_not_match')
+    expect(divergent_result_entry[:divergences].first[:details][:given_domain]).to eq('dev.bleacherreporty.com')
+    expect(divergent_result_entry[:divergences].first[:details][:fetched_domain]).to eq('dev.bleacherreport.com')
+  end
+
+  it 'revises an blog post entry with consistent domain (from medium)' do
+    entry = {
+      title: 'Elixir and Data Ingestion',
+      url: 'https://medium.com/@rschmukler/elixir-and-data-ingestion-ef5b2bd32d76',
+      subtitle: 'medium.com/@rschmukler',
+      tag: 'blog-post'
+    }
+
+    revision_result = ReviseBlogPosts.new.call([entry])
+
+    divergent_result_entry = revision_result.last
+    expect(divergent_result_entry[:entry_title]).to eq('Elixir and Data Ingestion')
+    expect(divergent_result_entry[:divergences]).to be_empty
+  end
+
+  it 'revises an blog post entry with divergent domain (from medium)' do
+    entry = {
+      title: 'Elixir and Data Ingestion',
+      url: 'https://medium.com/@rschmukler/elixir-and-data-ingestion-ef5b2bd32d76',
+      subtitle: 'medium.com/@rpw952',
+      tag: 'blog-post'
+    }
+
+    revision_result = ReviseBlogPosts.new.call([entry])
+
+    divergent_result_entry = revision_result.last
+    expect(divergent_result_entry[:entry_title]).to eq('Elixir and Data Ingestion')
+    expect(divergent_result_entry[:divergences]).to be_present
+    expect(divergent_result_entry[:divergences].first[:reason]).to eq('domain_does_not_match')
+    expect(divergent_result_entry[:divergences].first[:details][:given_domain]).to eq('medium.com/@rpw952')
+    expect(divergent_result_entry[:divergences].first[:details][:fetched_domain]).to eq('medium.com/@rschmukler')
+  end
 end

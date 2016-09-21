@@ -53,6 +53,21 @@ class ReviseBlogPosts
       }
     end
 
+    given_domain = entry[:subtitle]
+    fetched_domain = parse_domain_from_entry_url(entry[:url])
+
+    domain_matches = (given_domain == fetched_domain)
+
+    unless domain_matches
+      result_entry[:divergences] << {
+        reason: 'domain_does_not_match',
+        details: {
+          given_domain: given_domain,
+          fetched_domain: fetched_domain
+        }
+      }
+    end
+
     result_entry
   end
 
@@ -85,5 +100,9 @@ class ReviseBlogPosts
 
   def check_titles_match(given_title, fetched_title)
     CheckTitlesMatch.new.call(given_title, fetched_title)
+  end
+
+  def parse_domain_from_entry_url(entry_url)
+    ParseBlogPostDomain.new.call(entry_url)
   end
 end
