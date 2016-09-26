@@ -12,6 +12,7 @@ module ApplicationHelper
 
   def present_divergence_detail(field)
     {
+      given_page_title: 'Título da página na newsletter',
       fetched_page_title: 'Título da página na página externa',
       given_domain: 'Domínio na newsletter',
       fetched_domain: 'Domínio presente na URL',

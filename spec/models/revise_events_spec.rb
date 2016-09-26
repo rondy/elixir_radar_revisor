@@ -30,6 +30,7 @@ describe ReviseEvents do
     expect(divergent_result_entry[:entry_title]).to eq('EmpEx -- Halloween Lightning Talks 2016')
     expect(divergent_result_entry[:divergences]).to be_present
     expect(divergent_result_entry[:divergences].first[:reason]).to eq('page_title_does_not_match')
+    expect(divergent_result_entry[:divergences].first[:details][:given_page_title]).to eq('EmpEx -- Halloween Lightning Talks 2016')
     expect(divergent_result_entry[:divergences].first[:details][:fetched_page_title]).to eq('Empire City Elixir Conf')
   end
 

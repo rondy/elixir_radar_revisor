@@ -32,6 +32,7 @@ describe ReviseBlogPosts do
     expect(divergent_result_entry[:entry_title]).to eq('Using Postgres range data type in Ecto')
     expect(divergent_result_entry[:divergences]).to be_present
     expect(divergent_result_entry[:divergences].first[:reason]).to eq("page_title_does_not_match")
+    expect(divergent_result_entry[:divergences].first[:details][:given_page_title]).to eq('Using Postgres range data type in Ecto')
     expect(divergent_result_entry[:divergences].first[:details][:fetched_page_title]).to eq('Safeguard web service failures in Elixir with Fuse')
   end
 

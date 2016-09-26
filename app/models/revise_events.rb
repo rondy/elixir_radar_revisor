@@ -111,6 +111,7 @@ class ReviseEvents
           result_entry[:divergences] << {
             reason: 'page_title_does_not_match',
             details: {
+              given_page_title: given_entry_title,
               fetched_page_title: fetched_page_title
             }
           }

@@ -14,6 +14,7 @@ describe ApplicationHelper do
 
   describe '#present_divergence_detail' do
     it 'presents a divergence detail in a human friendly format' do
+      expect(present_divergence_detail(:given_page_title)).to eq('Título da página na newsletter')
       expect(present_divergence_detail(:fetched_page_title)).to eq('Título da página na página externa')
       expect(present_divergence_detail(:given_domain)).to eq('Domínio na newsletter')
       expect(present_divergence_detail(:fetched_domain)).to eq('Domínio presente na URL')
