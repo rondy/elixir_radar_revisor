@@ -3,10 +3,10 @@ require 'rails_helper'
 describe ReviseBlogPosts do
   it 'revises blog post entries from Elixir Radar' do
     consistent_entry = {
-      title: "Understanding Elixir's recompilation",
-      url: 'http://milhouseonsoftware.com/2016/08/11/understanding-elixir-recompilation/',
-      subtitle: 'milhouseonsoftware.com',
-      description: "Renan Ranelli gives a deep dive on Elixir's recompilation process and its dependency tracking system and how to avoid common pitfalls.",
+      title: 'Integration Testing Phoenix Applications',
+      url: 'https://medium.com/@boydm/integration-testing-phoenix-applications-b2a46acae9cb',
+      subtitle: 'medium.com/@boydm',
+      description: 'Check out phoenix_integration for server-side integration testing your Phoenix applications. It’s cool.',
       tag: 'blog-post'
     }
 
@@ -25,7 +25,7 @@ describe ReviseBlogPosts do
     expect(revision_result.size).to eq(2)
 
     consistent_result_entry = revision_result.first
-    expect(consistent_result_entry[:entry_title]).to eq("Understanding Elixir's recompilation")
+    expect(consistent_result_entry[:entry_title]).to eq('Integration Testing Phoenix Applications')
     expect(consistent_result_entry[:divergences]).to be_empty
 
     divergent_result_entry = revision_result.last
