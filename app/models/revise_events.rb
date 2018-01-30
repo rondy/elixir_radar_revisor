@@ -1,14 +1,15 @@
 class ReviseEvents
   def call(entries)
-    Parallel.map(
-      entries.select { |entry| entry[:tag] == 'event' },
-      in_processes: 8
-    ) do |entry|
+    filtered_entries(entries).map do |entry|
       revise_entry(entry)
     end
   end
 
   private
+
+  def filtered_entries(entries)
+    entries.select { |entry| entry[:tag] == 'event' }
+  end
 
   def revise_entry(entry)
     if entry[:url] =~ /meetup\.com/
