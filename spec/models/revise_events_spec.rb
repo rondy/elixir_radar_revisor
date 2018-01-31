@@ -67,6 +67,42 @@ describe ReviseEvents do
       expect(divergent_result_entry[:divergences].first[:details][:given_event_title]).to eq('Elixir PoA Tech Talks')
       expect(divergent_result_entry[:divergences].first[:details][:fetched_event_title]).to eq("Let's talk Elixir")
     end
+
+    it 'revises a event entry with divergent date' do
+      entry = {
+        title: 'Under the Covers with Agents, Tasks, and Supervisors',
+        url: 'https://www.meetup.com/KC-Elixir-Users-Group/events/246687381/',
+        description: 'Thursday, February 10, 2018 - Merriam, KS, USA',
+        tag: 'event'
+      }
+
+      revision_result = ReviseEvents.new.call([entry])
+
+      divergent_result_entry = revision_result.first
+      expect(divergent_result_entry[:entry_title]).to eq('Under the Covers with Agents, Tasks, and Supervisors')
+      expect(divergent_result_entry[:divergences]).to be_present
+      expect(divergent_result_entry[:divergences].first[:reason]).to include('event_description_does_not_match')
+      expect(divergent_result_entry[:divergences].first[:details][:given_event_description]).to eq('Thursday, February 10, 2018 - Merriam, KS, USA')
+      expect(divergent_result_entry[:divergences].first[:details][:fetched_event_description]).to eq('Thursday, February 1, 2018 - Merriam, KS, USA')
+    end
+
+    it 'revises a event entry with divergent location' do
+      entry = {
+        title: 'Think and design your Elixir systems for concurrency',
+        url: 'https://www.meetup.com/Elixir-Lunch/events/246847199/',
+        description: 'Thursday, February 1, 2018 - New York, NY, USA',
+        tag: 'event'
+      }
+
+      revision_result = ReviseEvents.new.call([entry])
+
+      divergent_result_entry = revision_result.first
+      expect(divergent_result_entry[:entry_title]).to eq('Think and design your Elixir systems for concurrency')
+      expect(divergent_result_entry[:divergences]).to be_present
+      expect(divergent_result_entry[:divergences].first[:reason]).to include('event_description_does_not_match')
+      expect(divergent_result_entry[:divergences].first[:details][:given_event_description]).to eq('Thursday, February 1, 2018 - New York, NY, USA')
+      expect(divergent_result_entry[:divergences].first[:details][:fetched_event_description]).to eq('Thursday, February 1, 2018 - Lehi, UT, USA')
+    end
   end
 
   context 'when accessing the entry url raises an error' do
