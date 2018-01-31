@@ -33,7 +33,7 @@ class ReviseEvents
       end,
 
       on_success: lambda do |fetched_event_title|
-        given_event_title = entry[:subtitle]
+        given_event_title = given_entry_title
 
         event_title_matches = check_titles_match(given_event_title, fetched_event_title)
 
