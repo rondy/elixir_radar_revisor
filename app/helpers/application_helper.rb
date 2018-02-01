@@ -5,7 +5,7 @@ module ApplicationHelper
       'domain_does_not_match' => 'Domínio do blog post não confere',
       'job_details_does_not_match' => 'Detalhes do job não confere',
       'event_title_does_not_match' => 'Título do evento não confere',
-      'event_date_does_not_match' => 'Data do evento não confere',
+      'event_description_does_not_match' => 'Detalhes do evento não conferem',
       'connection_error' => 'Erro de conexão ao acessar a página externa',
     }[reason] || ''
   end
