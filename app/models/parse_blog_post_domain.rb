@@ -25,7 +25,7 @@ class ParseBlogPostDomain
   end
 
   def parse_domain_from_generic_source(entry_url)
-    extract_host(entry_url)
+    extract_host(entry_url).sub(/^www\./, '')
   end
 
   def extract_host(url)
