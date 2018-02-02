@@ -116,25 +116,6 @@ describe ReviseEvents do
   end
 
   context 'when accessing the entry url raises an error' do
-    it 'revises a divergent event entry' do
-      VCR.use_cassette('event_ssl_error') do
-        entry = {
-          title: 'São Paulo, SP',
-          url: 'https://sp.femug.com/t/femug-sp-34-plataformatec/865',
-          subtitle: '',
-          tag: 'event'
-        }
-
-        revision_result = ReviseEvents.new.call([entry])
-
-        divergent_result_entry = revision_result.first
-        expect(divergent_result_entry[:entry_title]).to eq('São Paulo, SP')
-        expect(divergent_result_entry[:divergences]).to be_present
-        expect(divergent_result_entry[:divergences].first[:reason]).to eq('connection_error')
-        expect(divergent_result_entry[:divergences].first[:details][:error_message]).to eq('OpenSSL::SSL::SSLError: SSL_connect returned=1 errno=0 state=error: certificate verify failed')
-      end
-    end
-
     it 'revises as a divergent entry from meetup.com' do
       VCR.use_cassette('event_meetup_not_found') do
         entry = {
