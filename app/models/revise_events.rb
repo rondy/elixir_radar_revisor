@@ -1,5 +1,15 @@
-class ReviseEvents < ReviseEntries
+class ReviseEvents
+  def call(entries)
+    iterate_over_entries(filtered_entries(entries)) do |entry|
+      revise_entry(entry)
+    end
+  end
+
   private
+
+  def iterate_over_entries(entries, &block)
+    IterateOverEntries.new.call(entries, &block)
+  end
 
   def filtered_entries(entries)
     entries.select { |entry| entry[:tag] == 'event' }
