@@ -1,10 +1,4 @@
-class ReviseBlogPosts
-  def call(entries)
-    Parallel.map(filtered_entries(entries), in_processes: 8) do |entry|
-      revise_entry(entry)
-    end
-  end
-
+class ReviseBlogPosts < ReviseEntries
   private
 
   def filtered_entries(entries)
