@@ -22,7 +22,7 @@ class RevisionsController < ApplicationController
   private
 
   def fetch_revision_results_from(entries)
-    ACTIONS.keys.map do |action|
+    Parallel.map(ACTIONS.keys, in_processes: ACTIONS.keys.size) do |action|
       ACTIONS.fetch(action).call(entries)
     end
   end
