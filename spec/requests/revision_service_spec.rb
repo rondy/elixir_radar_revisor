@@ -2,105 +2,113 @@ require 'rails_helper'
 
 describe 'Revision service', type: :request do
   it 'revises blog post entries from Elixir Radar' do
-    consistent_entry = {
-      'title' => "Understanding Elixir's recompilation",
-      'url' => 'http://milhouseonsoftware.com/2016/08/11/understanding-elixir-recompilation/',
-      'subtitle' => 'milhouseonsoftware.com',
-      'tag' => 'blog-post'
-    }
+    VCR.use_cassette('revision_service_blog_posts') do
+      consistent_entry = {
+        title: 'Integration Testing Phoenix Applications',
+        url: 'https://medium.com/@boydm/integration-testing-phoenix-applications-b2a46acae9cb',
+        subtitle: 'medium.com/@boydm',
+        description: 'Check out phoenix_integration for server-side integration testing your Phoenix applications. It’s cool.',
+        tag: 'blog-post'
+      }
 
-    divergent_entry = {
-      'title' => 'Using Postgres range data type in Ecto',
-      'url' => 'http://blog.mojotech.com/safeguard-web-service-failures-in-elixir-with-fuse',
-      'subtitle' => 'blog.mojotech.com',
-      'tag' => 'blog-post'
-    }
+      divergent_entry = {
+        title: 'Using Postgres range data type in Ecto',
+        url: 'http://blog.mojotech.com/safeguard-web-service-failures-in-elixir-with-fuse',
+        subtitle: 'blog.mojotech.com',
+        description: 'If you are depending on external services that may fail, Omid Bachari has written an article on how to use the Fuse library for safeguarding your applications.',
+        tag: 'blog-post'
+      }
 
-    post '/revisions', params: {
-      "entriesList" => [consistent_entry, divergent_entry]
-    }
+      post '/revisions', params: {
+        "entriesList" => [consistent_entry, divergent_entry]
+      }
 
-    response_body = parse_response_body(response.body)
+      response_body = parse_response_body(response.body)
 
-    expect_to_render_revision_summary(response_body, 'Blog posts (2 links revisados, 1 divergência')
+      expect_to_render_revision_summary(response_body, 'Blog posts (2 links revisados, 1 divergência')
 
-    expect_to_render_divergent_entry(
-      response_body,
-      entry_title: 'Using Postgres range data type in Ecto',
-      divergence_reason: 'Título da página não confere',
-      divergence_details: 'Título da página na página externa: Safeguard web service failures in Elixir with Fuse',
-    )
+      expect_to_render_divergent_entry(
+        response_body,
+        entry_title: 'Using Postgres range data type in Ecto',
+        divergence_reason: 'Título da página não confere',
+        divergence_details: 'Título da página na página externa: Safeguard web service failures in Elixir with Fuse',
+      )
 
-    expect_not_to_render_consistent_entry(
-      response_body,
-      entry_title: "Understanding Elixir's recompilation"
-    )
+      expect_not_to_render_consistent_entry(
+        response_body,
+        entry_title: 'Integration Testing Phoenix Applications'
+      )
+    end
   end
 
   it 'revises job entries from Elixir Radar' do
-    consistent_entry = {
-      'title' => 'Elixir Developer',
-      'url' => 'https://mediteo-gmbh.workable.com/jobs/319472',
-      'subtitle' => 'Mediteo GmbH - Berlin/Remote',
-      'tag' => 'job'
-    }
+    VCR.use_cassette('revision_service_jobs') do
+      consistent_entry = {
+        title: 'Software Developer - Full Stack',
+        subtitle: 'UTRUST - Braga, Portugal (remote)',
+        url: 'https://utrust.breezy.hr/p/fbe2ca7222ef01-software-developer-full-stack?utm_campaign=elixir_radar_127&utm_medium=email&utm_source=RD+Station',
+        tag: 'job'
+      }
 
-    divergent_entry = {
-      'title' => 'Desenvolvedor Elixir/Phoenix ou back-end sênior disposto a aprender',
-      'url' => 'http://techblog.fredapp.com.br/estamos-em-busca-de-desenvolvedor-back-end-elixir-e-phoenix-ou-ruby-on-rails-lisp-clojure-ou-haskell-e-disposto-a-aprender-elixir/',
-      'subtitle' => 'The RealReal - San Francisco, CA, United States',
-      'tag' => 'job'
-    }
+      divergent_entry = {
+        title: 'Elixir Software Engineer',
+        subtitle: 'The RealReal',
+        url: 'https://www.thecitybase.com/positions/Elixir_Software_Engineer?gh_jid=985767&utm_campaign=elixir_radar_127&utm_medium=email&utm_source=RD+Station',
+        tag: 'job'
+      }
 
-    post '/revisions', params: {
-      "entriesList" => [consistent_entry, divergent_entry]
-    }
+      post '/revisions', params: {
+        "entriesList" => [consistent_entry, divergent_entry]
+      }
 
-    response_body = parse_response_body(response.body)
+      response_body = parse_response_body(response.body)
 
-    expect_to_render_revision_summary(response_body, 'Jobs (2 links revisados, 1 divergência)')
+      expect_to_render_revision_summary(response_body, 'Jobs (2 links revisados, 1 divergência)')
 
-    expect_to_render_divergent_entry(
-      response_body,
-      entry_title: 'Desenvolvedor Elixir/Phoenix ou back-end sênior disposto a aprender',
-      divergence_reason: 'Detalhes do job não confere',
-      divergence_details: 'Detalhes do job na newsletter: The RealReal'
-    )
+      expect_to_render_divergent_entry(
+        response_body,
+        entry_title: 'Elixir Software Engineer',
+        divergence_reason: 'Detalhes do job não confere',
+        divergence_details: 'Detalhes do job na newsletter: The RealReal'
+      )
 
-    expect_not_to_render_consistent_entry(response_body, entry_title: 'Elixir Developer')
+      expect_not_to_render_consistent_entry(response_body, entry_title: 'Software Developer - Full Stack')
+    end
   end
 
-  it 'revises event entries from Elixir Radar' do
-    consistent_entry = {
-      'title' => 'ElixirConf',
-      'url' => 'http://elixirconf.com/',
-      'subtitle' => 'Conference = (DOLAR)450; Conference + Training = (DOLAR)700. (expiration: August 22)\n            <br>',
-      'tag' => 'event'
-    }
+  it 'revises event entries from Elixir Radar', focus: true do
+    VCR.use_cassette('revision_service_events') do
+      consistent_entry = {
+        title: 'ElixirConf',
+        url: 'http://elixirconf.com/',
+        description: 'ElixirConf™ US - Bellevue, WA, September 5-8, 2017.',
+        tag: 'event'
+      }
 
-    divergent_entry = {
-      'title' => 'EmpEx -- Halloween Lightning Talks 2016',
-      'url' => 'http://empex.co/',
-      'subtitle' => 'Call for Proposals now open\n        <br>',
-      'tag' => 'event'
-    }
+      divergent_entry = {
+        title: 'EmpEx -- Halloween Lightning Talks 2016',
+        url: 'http://empex.co/',
+        description: 'Call for Proposals now open\n        <br>',
+        tag: 'event'
+      }
 
-    post '/revisions', params: {
-      "entriesList" => [consistent_entry, divergent_entry]
-    }
+      post '/revisions', params: {
+        "entriesList" => [consistent_entry, divergent_entry]
+      }
 
-    response_body = parse_response_body(response.body)
+      response_body = parse_response_body(response.body)
 
-    expect_to_render_revision_summary(response_body, 'Events (2 links revisados, 1 divergência)')
+      expect_to_render_revision_summary(response_body, 'Events (2 links revisados, 1 divergência)')
 
-    expect_to_render_divergent_entry(
-      response_body,
-      entry_title: 'EmpEx -- Halloween Lightning Talks 2016',
-      divergence_reason: 'Título da página não confere',
-      divergence_details: 'Título da página na página externa: Empire City Elixir Conf'
-    )
+      expect_to_render_divergent_entry(
+        response_body,
+        entry_title: 'EmpEx -- Halloween Lightning Talks 2016',
+        divergence_reason: 'Título da página não confere',
+        divergence_details: 'Título da página na página externa: EMPEX'
+      )
 
-    expect_not_to_render_consistent_entry(response_body, entry_title: 'ElixirConf')
+      expect_not_to_render_consistent_entry(response_body, entry_title: 'ElixirConf')
+    end
   end
 
   def parse_response_body(response_body)

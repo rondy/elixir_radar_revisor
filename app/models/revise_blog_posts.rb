@@ -1,35 +1,44 @@
 class ReviseBlogPosts
   def call(entries)
-    Parallel.map(
-      entries.select { |entry| entry[:tag] == 'blog-post' },
-      in_processes: 4
-    ) do |entry|
-      given_entry_title = entry[:title]
-
-      result_entry = {
-        entry_title: given_entry_title,
-        divergences: []
-      }
-
-      fetching_content_from_web_page(
-        action: lambda do
-          fetch_page_title(entry)
-        end,
-
-        on_success: lambda do |fetched_page_title|
-          revise_from_successful_response(entry, result_entry, fetched_page_title)
-        end,
-
-        on_error: lambda do |error_message|
-          revise_from_failed_response(entry, result_entry, error_message)
-        end
-      )
-
-      result_entry
+    iterate_over_entries(filtered_entries(entries)) do |entry|
+      revise_entry(entry)
     end
   end
 
   private
+
+  def iterate_over_entries(entries, &block)
+    IterateOverEntries.new.call(entries, &block)
+  end
+
+  def filtered_entries(entries)
+    entries.select { |entry| entry[:tag] == 'blog-post' }
+  end
+
+  def revise_entry(entry)
+    given_entry_title = entry[:title]
+
+    result_entry = {
+      entry_title: given_entry_title,
+      divergences: []
+    }
+
+    fetching_content_from_web_page(
+      action: lambda do
+        fetch_page_title(entry)
+      end,
+
+      on_success: lambda do |fetched_page_title|
+        revise_from_successful_response(entry, result_entry, fetched_page_title)
+      end,
+
+      on_error: lambda do |error_message|
+        revise_from_failed_response(entry, result_entry, error_message)
+      end
+    )
+
+    result_entry
+  end
 
   def fetching_content_from_web_page(action:, on_success:, on_error:)
     FetchContentFromWebPage.new.call(

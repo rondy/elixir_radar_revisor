@@ -13,6 +13,10 @@ describe ParseBlogPostDomain do
     url_from_generic_source = 'http://blog.mojotech.com/safeguard-web-service-failures-in-elixir-with-fuse'
     parsed_domain = ParseBlogPostDomain.new.call(url_from_generic_source)
     expect(parsed_domain).to eq('blog.mojotech.com')
+
+    url_from_generic_source = 'http://www.petecorey.com/blog/2018/01/08/bitcoins-base58check-in-pure-elixir/?utm_campaign=elixir_radar_127&utm_medium=email&utm_source=RD+Station'
+    parsed_domain = ParseBlogPostDomain.new.call(url_from_generic_source)
+    expect(parsed_domain).to eq('petecorey.com')
   end
 
   it 'returns a domain from a medium.com url' do

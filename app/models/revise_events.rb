@@ -1,14 +1,19 @@
 class ReviseEvents
   def call(entries)
-    Parallel.map(
-      entries.select { |entry| entry[:tag] == 'event' },
-      in_processes: 8
-    ) do |entry|
+    iterate_over_entries(filtered_entries(entries)) do |entry|
       revise_entry(entry)
     end
   end
 
   private
+
+  def iterate_over_entries(entries, &block)
+    IterateOverEntries.new.call(entries, &block)
+  end
+
+  def filtered_entries(entries)
+    entries.select { |entry| entry[:tag] == 'event' }
+  end
 
   def revise_entry(entry)
     if entry[:url] =~ /meetup\.com/
@@ -32,7 +37,7 @@ class ReviseEvents
       end,
 
       on_success: lambda do |fetched_event_title|
-        given_event_title = entry[:subtitle]
+        given_event_title = given_entry_title
 
         event_title_matches = check_titles_match(given_event_title, fetched_event_title)
 
@@ -59,20 +64,20 @@ class ReviseEvents
 
     fetching_content_from_web_page(
       action: lambda do
-        fetch_meetup_com_event_date(entry)
+        fetch_meetup_com_event_description(entry)
       end,
 
-      on_success: lambda do |fetched_event_date|
-        given_event_date = entry[:description]
+      on_success: lambda do |fetched_event_description|
+        given_event_description = entry[:description]
 
-        event_date_matches = check_dates_match(given_event_date, fetched_event_date)
+        event_description_matches = check_descriptions_match(given_event_description, fetched_event_description)
 
-        unless event_date_matches
+        unless event_description_matches
           result_entry[:divergences] << {
-            reason: 'event_date_does_not_match',
+            reason: 'event_description_does_not_match',
             details: {
-              given_event_date: given_event_date,
-              fetched_event_date: fetched_event_date
+              given_event_description: given_event_description,
+              fetched_event_description: fetched_event_description
             }
           }
         end
@@ -150,7 +155,7 @@ class ReviseEvents
     agent = Mechanize.new
     agent.read_timeout = 2
 
-    agent.get(entry[:url]).search('#event-title h1').text.strip
+    agent.get(entry[:url]).search('div.pageHead--titleArea h1').text.strip
   end
 
   def fetch_meetup_com_event_date(entry)
@@ -159,19 +164,51 @@ class ReviseEvents
 
     page = agent.get(entry[:url])
 
-    event_date_text =
-      page.search('.past-event-info li:first').text.presence ||
-      page.search('time[itemprop="startDate"]').text
+    span_date = page.search('div.eventTimeDisplay span.eventTimeDisplay-startDate span').first
+    event_date_text = span_date.text
 
     event_date_text.to_s.strip
+  end
+
+  def fetch_meetup_com_event_description(entry)
+    event_date = fetch_meetup_com_event_date(entry)
+    event_location = fetch_meetup_com_event_location(entry)
+
+    return event_date if event_location.blank?
+
+    "#{event_date} - #{event_location}"
+  end
+
+  def fetch_meetup_com_event_location(entry)
+    agent = Mechanize.new
+    agent.read_timeout = 2
+
+    page = agent.get(entry[:url])
+
+    json_info = page.search('script[type="application/ld+json"]').first
+    parsed_info = JSON.parse(json_info, symbolize_names: true)
+
+    location_info = parsed_info[:location]
+    return nil if location_info.blank?
+
+    address = location_info[:address]
+    composed_location = [address[:addressLocality], address[:addressRegion], address[:addressCountry]]
+    filtered_location = composed_location.reject(&:blank?)
+
+    filtered_location.join(', ')
   end
 
   def check_titles_match(given_title, fetched_title)
     CheckTitlesMatch.new.call(given_title, fetched_title)
   end
 
-  def check_dates_match(given_event_date, fetched_event_date)
-    parse_event_date(given_event_date) == parse_event_date(fetched_event_date)
+  def standardize_event_description(description)
+    date, location = description.split(' - ')
+    "#{parse_event_date(date)} - #{location}"
+  end
+
+  def check_descriptions_match(given_event_description, fetched_event_description)
+    standardize_event_description(given_event_description) == standardize_event_description(fetched_event_description)
   end
 
   def parse_event_date(event_date)
